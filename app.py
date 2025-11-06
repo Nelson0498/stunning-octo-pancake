@@ -165,7 +165,7 @@ if pagina == "🏠 Introducción":
         - **Filas iniciales**: 1,025
         - **Duplicados exactos**: 723 filas
         - **Valores corruptos**: 6 filas con códigos incorrectos para NaNs (ca=4, thal=0)
-        - **Dataset final confiable**: 297 filas
+        - **Dataset final confiable**: 296 filas
         """)
     
     with col2:
@@ -907,4 +907,5 @@ st.sidebar.markdown(
     Proyecto de Minería de Datos  
     🎓 Análisis de Enfermedad Cardíaca
     """
+
 )
