@@ -325,7 +325,7 @@ elif pagina == "📊 Análisis Exploratorio (EDA)":
             # Crear gráfico de barras para tipo de dolor vs diagnóstico
             cp_diagnosis = pd.crosstab(df_filtrado['tipo_dolor_pecho'], df_filtrado['diagnostico'])
             cp_diagnosis.columns = ['Sano', 'Enfermo']
-            cp_diagnosis.index = ['Angina típica', 'Angina atípica', 'Dolor no anginoso', 'Asintomático']
+            cp_diagnosis.index = ['0', '1', '2', '3']
             
             fig_cp = go.Figure()
             fig_cp.add_trace(go.Bar(
@@ -909,3 +909,4 @@ st.sidebar.markdown(
     """
 
 )
+
