@@ -351,9 +351,8 @@ elif pagina == "📊 Análisis Exploratorio (EDA)":
             
             st.markdown("""
             **🔍 Observaciones Clave:**
-            - Pacientes con dolor **asintomático** tienen mayor probabilidad de enfermedad
-            - Dolor **angina atípica** también muestra alta correlación con enfermedad
-            - **Angina típica** tiene distribución más balanceada
+            - Si un paciente reporta 'Angina Típica', es muy probable que esté Sano (Diagnóstico 0)
+            - Si un paciente reporta 'Angina Atípica', 'Dolor No Anginoso' o es 'Asintomático', es muy probable que esté Enfermo (Diagnóstico 1)
             """)
         
         with col2:
@@ -909,4 +908,5 @@ st.sidebar.markdown(
     """
 
 )
+
 
