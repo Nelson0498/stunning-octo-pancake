@@ -15,6 +15,56 @@ warnings.filterwarnings('ignore')
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
+                           
+# Configuración de la página
+st.set_page_config(
+    page_title="Diagnóstico de Enfermedad Cardíaca",
+    page_icon="❤️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Título principal en sidebar
+st.sidebar.title("❤️ Diagnóstico Cardíaco")
+st.sidebar.markdown("---")
+
+# Navegación
+pagina = st.sidebar.radio(
+    "Navegación",
+    ["🏠 Introducción", "📊 Análisis Exploratorio (EDA)", "🤖 Resultados de Modelos (K-Fold)", "🩺 Predicción de Diagnóstico", "📈 Dashboard Interactivo"]
+)
+
+# Carga de datos CON NOMBRES EN ESPAÑOL
+@st.cache_data
+def cargar_datos():
+    try:
+        df = pd.read_csv('heart_cleaned_final.csv')
+        st.success("✅ Dataset real cargado correctamente")
+        return df
+    except:
+        st.warning("⚠️ No se encontró heart_cleaned_final.csv, usando datos de ejemplo")
+        # Datos de ejemplo con nombres en español
+        np.random.seed(42)
+        n_samples = 297
+        data = {
+            'edad': np.random.randint(29, 77, n_samples),
+            'sexo': np.random.randint(0, 2, n_samples),
+            'tipo_dolor_pecho': np.random.randint(0, 4, n_samples),
+            'presion_arterial_reposo': np.random.randint(94, 200, n_samples),
+            'colesterol': np.random.randint(126, 564, n_samples),
+            'glucemia_ayunas_alta': np.random.randint(0, 2, n_samples),
+            'resultados_ecg_reposo': np.random.randint(0, 3, n_samples),
+            'frecuencia_cardiaca_max': np.random.randint(71, 202, n_samples),
+            'angina_inducida_ejercicio': np.random.randint(0, 2, n_samples),
+            'depresion_st_ejercicio': np.round(np.random.uniform(0, 6.2, n_samples), 1),
+            'pendiente_st': np.random.randint(0, 3, n_samples),
+            'num_vasos_principales': np.random.randint(0, 4, n_samples),
+            'resultado_talasemia': np.random.randint(1, 4, n_samples),
+            'diagnostico': np.random.randint(0, 2, n_samples)
+        }
+        return pd.DataFrame(data)
+
+df = cargar_datos()
 
 def entrenar_modelo_compatible():
     """Entrenar un modelo compatible con las versiones actuales"""
@@ -94,57 +144,49 @@ def calcular_simulacion(edad, sexo, tipo_dolor_pecho, presion_arterial_reposo,
             st.write(f"   • {factor.replace('_', ' ').title()}")
     
     return probability, prediction
+def calcular_simulacion(edad, sexo, tipo_dolor_pecho, presion_arterial_reposo, 
+                       colesterol, glucemia_ayunas_alta, angina_inducida_ejercicio,
+                       depresion_st_ejercicio, pendiente_st, num_vasos_principales, 
+                       resultado_talasemia):
+    """Simulación mejorada basada en factores de riesgo médicos"""
+    
+    # PESOS MÉDICOS REALES (basados en literatura médica)
+    factores_peso = {
+        'edad_avanzada': (edad > 55, 1.5),
+        'sexo_masculino': (sexo == 1, 1.2),
+        'dolor_atipico': (tipo_dolor_pecho in [1, 2], 1.8),
+        'dolor_asintomatico': (tipo_dolor_pecho == 3, 2.2),
+        'presion_alta': (presion_arterial_reposo > 130, 1.4),
+        'colesterol_alto': (colesterol > 240, 1.3),
+        'glucemia_alta': (glucemia_ayunas_alta == 1, 1.2),
+        'angina_ejercicio': (angina_inducida_ejercicio == 1, 1.7),
+        'depresion_st_alta': (depresion_st_ejercicio > 1.0, 1.6),
+        'pendiente_descendente': (pendiente_st == 2, 1.9),
+        'multiples_vasos': (num_vasos_principales > 1, 2.0),
+        'thalassemia_riesgo': (resultado_talasemia == 3, 1.8)
+    }
+    
+    # Calcular score de riesgo
+    score_riesgo = 0
+    factores_identificados = []
+    
+    for factor, (condicion, peso) in factores_peso.items():
+        if condicion:
+            score_riesgo += peso
+            factores_identificados.append(factor)
+    
+    # Convertir a probabilidad (0-95%)
+    probability = min(0.95, 0.1 + (score_riesgo * 0.1))
+    prediction = 1 if probability > 0.5 else 0
+    
+    # Mostrar factores identificados
+    if factores_identificados:
+        st.info(f"🔍 **Factores de riesgo identificados**: {len(factores_identificados)}")
+        for factor in factores_identificados:
+            st.write(f"   • {factor.replace('_', ' ').title()}")
+    
+    return probability, prediction
                            
-# Configuración de la página
-st.set_page_config(
-    page_title="Diagnóstico de Enfermedad Cardíaca",
-    page_icon="❤️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Título principal en sidebar
-st.sidebar.title("❤️ Diagnóstico Cardíaco")
-st.sidebar.markdown("---")
-
-# Navegación
-pagina = st.sidebar.radio(
-    "Navegación",
-    ["🏠 Introducción", "📊 Análisis Exploratorio (EDA)", "🤖 Resultados de Modelos (K-Fold)", "🩺 Predicción de Diagnóstico", "📈 Dashboard Interactivo"]
-)
-
-# Carga de datos CON NOMBRES EN ESPAÑOL
-@st.cache_data
-def cargar_datos():
-    try:
-        df = pd.read_csv('heart_cleaned_final.csv')
-        st.success("✅ Dataset real cargado correctamente")
-        return df
-    except:
-        st.warning("⚠️ No se encontró heart_cleaned_final.csv, usando datos de ejemplo")
-        # Datos de ejemplo con nombres en español
-        np.random.seed(42)
-        n_samples = 297
-        data = {
-            'edad': np.random.randint(29, 77, n_samples),
-            'sexo': np.random.randint(0, 2, n_samples),
-            'tipo_dolor_pecho': np.random.randint(0, 4, n_samples),
-            'presion_arterial_reposo': np.random.randint(94, 200, n_samples),
-            'colesterol': np.random.randint(126, 564, n_samples),
-            'glucemia_ayunas_alta': np.random.randint(0, 2, n_samples),
-            'resultados_ecg_reposo': np.random.randint(0, 3, n_samples),
-            'frecuencia_cardiaca_max': np.random.randint(71, 202, n_samples),
-            'angina_inducida_ejercicio': np.random.randint(0, 2, n_samples),
-            'depresion_st_ejercicio': np.round(np.random.uniform(0, 6.2, n_samples), 1),
-            'pendiente_st': np.random.randint(0, 3, n_samples),
-            'num_vasos_principales': np.random.randint(0, 4, n_samples),
-            'resultado_talasemia': np.random.randint(1, 4, n_samples),
-            'diagnostico': np.random.randint(0, 2, n_samples)
-        }
-        return pd.DataFrame(data)
-
-df = cargar_datos()
-
 # 🆕 FUNCIONES NUEVAS PARA EL DASHBOARD INTERACTIVO
 def crear_matriz_correlacion(df_filtrado):
     """Crear matriz de correlación interactiva"""
@@ -1020,6 +1062,7 @@ st.sidebar.markdown(
     """
 
 )
+
 
 
 
