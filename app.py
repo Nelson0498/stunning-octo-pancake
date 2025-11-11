@@ -642,13 +642,12 @@ elif pagina == "🩺 Predicción de Diagnóstico":
         num_vasos_principales = st.slider("Número de vasos principales coloreados", min_value=0, max_value=3, value=1)
         resultado_talasemia = st.slider("Resultado de thalassemia", min_value=1, max_value=3, value=2)
     
-    # Botón de predicción
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        predecir_btn = st.button("🔍 Realizar Predicción", type="primary", use_container_width=True)
-    
-    # Resultados de la predicción
-    # Resultados de la predicción
+    # Botón de predicción - DEFINIRLO SIEMPRE, NO DENTRO DE CONDICIONALES
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    predecir_btn = st.button("🔍 Realizar Predicción", type="primary", use_container_width=True)
+
+# ✅ AHORA predecir_btn está SIEMPRE definido
 if predecir_btn:
     st.markdown("---")
     st.header("🎯 Resultado del Diagnóstico")
@@ -673,6 +672,41 @@ if predecir_btn:
                 st.success("✅ Modelo médico entrenado exitosamente")
         except Exception as e:
             st.warning("🔧 Usando evaluación basada en factores de riesgo clínicos")
+    
+    # REALIZAR PREDICCIÓN
+    if modelo and usando_modelo_real:
+        try:
+            # PREDICCIÓN CON MODELO REAL
+            features = np.array([[
+                edad, sexo, tipo_dolor_pecho, presion_arterial_reposo, colesterol,
+                glucemia_ayunas_alta, resultados_ecg_reposo, frecuencia_cardiaca_max,
+                angina_inducida_ejercicio, depresion_st_ejercicio, pendiente_st,
+                num_vasos_principales, resultado_talasemia
+            ]])
+            
+            prediction = modelo.predict(features)[0]
+            probabilidades = modelo.predict_proba(features)[0]
+            probability = probabilidades[1]
+            
+            st.info("📊 **Método**: Algoritmo de Machine Learning (Regresión Logística)")
+            
+        except Exception as e:
+            st.warning("🔄 Recurriendo a evaluación clínica...")
+            probability, prediction = calcular_simulacion(edad, sexo, tipo_dolor_pecho, 
+                                                         presion_arterial_reposo, colesterol,
+                                                         glucemia_ayunas_alta, angina_inducida_ejercicio,
+                                                         depresion_st_ejercicio, pendiente_st,
+                                                         num_vasos_principales, resultado_talasemia)
+    else:
+        # SIMULACIÓN MÉDICA
+        probability, prediction = calcular_simulacion(edad, sexo, tipo_dolor_pecho, 
+                                                     presion_arterial_reposo, colesterol,
+                                                     glucemia_ayunas_alta, angina_inducida_ejercicio,
+                                                     depresion_st_ejercicio, pendiente_st,
+                                                     num_vasos_principales, resultado_talasemia)
+        st.info("📊 **Método**: Evaluación clínica basada en factores de riesgo")
+    
+    # ... el resto de tu código para mostrar resultados ...
     
     # REALIZAR PREDICCIÓN
     if modelo and usando_modelo_real:
@@ -1020,6 +1054,7 @@ st.sidebar.markdown(
     """
 
 )
+
 
 
 
