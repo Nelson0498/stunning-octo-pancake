@@ -101,49 +101,7 @@ def entrenar_modelo_compatible():
     except Exception as e:
         st.error(f"Error entrenando modelo: {e}")
         return None
-
-def calcular_simulacion(edad, sexo, tipo_dolor_pecho, presion_arterial_reposo, 
-                       colesterol, glucemia_ayunas_alta, angina_inducida_ejercicio,
-                       depresion_st_ejercicio, pendiente_st, num_vasos_principales, 
-                       resultado_talasemia):
-    """Simulación mejorada basada en factores de riesgo médicos"""
-    
-    # PESOS MÉDICOS REALES (basados en literatura médica)
-    factores_peso = {
-        'edad_avanzada': (edad > 55, 1.5),
-        'sexo_masculino': (sexo == 1, 1.2),
-        'dolor_atipico': (tipo_dolor_pecho in [1, 2], 1.8),
-        'dolor_asintomatico': (tipo_dolor_pecho == 3, 2.2),
-        'presion_alta': (presion_arterial_reposo > 130, 1.4),
-        'colesterol_alto': (colesterol > 240, 1.3),
-        'glucemia_alta': (glucemia_ayunas_alta == 1, 1.2),
-        'angina_ejercicio': (angina_inducida_ejercicio == 1, 1.7),
-        'depresion_st_alta': (depresion_st_ejercicio > 1.0, 1.6),
-        'pendiente_descendente': (pendiente_st == 2, 1.9),
-        'multiples_vasos': (num_vasos_principales > 1, 2.0),
-        'thalassemia_riesgo': (resultado_talasemia == 3, 1.8)
-    }
-    
-    # Calcular score de riesgo
-    score_riesgo = 0
-    factores_identificados = []
-    
-    for factor, (condicion, peso) in factores_peso.items():
-        if condicion:
-            score_riesgo += peso
-            factores_identificados.append(factor)
-    
-    # Convertir a probabilidad (0-95%)
-    probability = min(0.95, 0.1 + (score_riesgo * 0.1))
-    prediction = 1 if probability > 0.5 else 0
-    
-    # Mostrar factores identificados
-    if factores_identificados:
-        st.info(f"🔍 **Factores de riesgo identificados**: {len(factores_identificados)}")
-        for factor in factores_identificados:
-            st.write(f"   • {factor.replace('_', ' ').title()}")
-    
-    return probability, prediction
+      
 def calcular_simulacion(edad, sexo, tipo_dolor_pecho, presion_arterial_reposo, 
                        colesterol, glucemia_ayunas_alta, angina_inducida_ejercicio,
                        depresion_st_ejercicio, pendiente_st, num_vasos_principales, 
@@ -1062,6 +1020,7 @@ st.sidebar.markdown(
     """
 
 )
+
 
 
 
