@@ -11,6 +11,11 @@ from sklearn.metrics import confusion_matrix
 import warnings
 warnings.filterwarnings('ignore')
 
+# 🆕 AGREGAR ESTAS 3 IMPORTACIONES FALTANTES
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+
 def entrenar_modelo_compatible():
     """Entrenar un modelo compatible con las versiones actuales"""
     try:
@@ -1015,6 +1020,7 @@ st.sidebar.markdown(
     """
 
 )
+
 
 
 
